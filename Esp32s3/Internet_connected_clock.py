@@ -1,11 +1,11 @@
-# This code is heavily interlinked, so it wont work if you take any segment out of it.
+# This code is heavily interlinked, so it won't work if you take any segment out of it.
 import neopixel
 import time
 import machine
 import network
 import ntptime
 raise ValueError('fill details in lines 10-14, and comment out line 7')
-
+'''Note: pix 12 is 30 sec mark , pix 18 is 45 sec mark...'''
 # Settings
 wifi_SSID = 'ssid'
 wifi_PWD  = 'password'
