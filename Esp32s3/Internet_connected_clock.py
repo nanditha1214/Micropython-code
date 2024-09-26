@@ -1,19 +1,19 @@
-# This code is heavily interlinked, so it won't work if you take any segment out of it.
 import neopixel
 import time
 import machine
 import network
 import ntptime
-raise ValueError('fill details in lines 10-14, and comment out line 7')
-'''Note: pix 12 is 30 sec mark , pix 18 is 45 sec mark...'''
+from random import randint # time-pass
+
 # Settings
-wifi_SSID = 'ssid'
-wifi_PWD  = 'password'
+
+wifi_SSID = ['ssid0','ssid1']  #wifi ssid(s)
+wifi_PWD  = ['pwd0','pwd1']    #wifi pwd(s)
+wifi_id = 0                    #which ssid/pwd to use(follow python array rules whie entering a value)
 time_off = 5.5 * 3600  # UTC offset in seconds
-bg_col = (4, 2, 3)     # Background color
-np_pin = 1             # NeoPixel GPIO pin
-#dev feature
-ck_type = 24           # Clock type: 12 or 24-hour format
+bg_col = (3, 1, 2)     # Background color
+np_pin = 1             # NeoPixel pin
+ck_type = 12           # Clock type: 12 or 24-hour format
 
 # Neopixel setup
 pin = machine.Pin(np_pin)   # Set GPIO to output to drive NeoPixels
@@ -23,23 +23,36 @@ np = neopixel.NeoPixel(pin, 24)   # Create NeoPixel driver on GPIO0 for 24 pixel
 sta = network.WLAN(network.STA_IF)
 sta.active(True)
 
-# Try connecting to WiFi and syncing time
-try:
-    if not sta.isconnected():
-        sta.connect(wifi_SSID, wifi_PWD)
-        while not sta.isconnected():
-            pass
-    print('Connection successful')
-    
+# Try connecting to WiFi and syncing time, until success
+while True:
+    time.sleep(.25)
+    np.fill((randint(0,10), randint(0,10), randint(0,10)))
+    np.write()
+    print('.')
     try:
-        ntptime.settime()  # Sync time from NTP server
-        print("Time synchronized successfully")
+        if not sta.isconnected():
+            sta.connect(wifi_SSID[wifi_id], wifi_PWD[wifi_id])
+            while not sta.isconnected():
+                pass
+                print('TE')
+                np.fill((randint(0,10), randint(0,10), randint(0,10)))
+                np.write()
+                time.sleep(.2)
+                
+        print('WIFI Connection successful')
+    
+        try:
+            ntptime.settime()  # Sync time from NTP server
+            print("Time synchronized successfully")
+            break
+        except Exception as e:
+            print("Error syncing time:", e)
+            actual_time = (2023, 9, 12, 1, 56, 0, 0, 0)  # Default time if NTP fails
     except Exception as e:
-        print("Error syncing time:", e)
-        actual_time = (2023, 9, 12, 1, 56, 0, 0, 0)  # Default time if NTP fails
-except Exception as e:
-    print("WiFi connection failed, setting default time")
-    actual_time = (2023, 9, 12, 1, 56, 0, 0, 0)  # Default time if no WiFi
+        print("WiFi connection failed, setting default time")
+        actual_time = (2023, 9, 12, 1, 56, 0, 0, 0)  # Default time if no WiFi
+    
+
 
 # Timezone offset
 UTC_OFFSET = int(time_off)
@@ -74,22 +87,43 @@ def get_hr():
         elif hour > 12:
             hour -= 12  # Convert 13-23 to 1-11 for PM
     
-    pixel_range = 12 if ck_type == 12 else 24
-    return orient(get_pix_value(hour, ip=24))#, ct=pixel_range))
+    #pixel_range = ck_type# == 12 else 24
+    return get_pix_value(hour, ip=24)#, ct=pixel_range))
 
 def f_to_i(a, b, c):
     return int(a), int(b), int(c)
 
-def update_color(r, g, b, i):
-    '''if ck_type == 12 and actual_time[3] >= 12:
-        r, g, b = f_to_i(r/2, g/2, b/2)  # Dim colors by 50% for PM'''# work in progress
+def update_color(r, g, b, i, dim=False):
+    #if ck_type == 12 and actual_time[3] >= 12:
+    #    r, g, b = f_to_i(r/2, g/2, b/2)  # Dim colors by 50% for PM#'''# work in progress
     
+
     tup = np[i]
     nr = r if r != '-' else tup[0]
     ng = g if g != '-' else tup[1]
     nb = b if b != '-' else tup[2]
+    if dim:
+        nr = round(nr/8)
+        ng = round(ng/8)
+        nb = round(nb/8)
+        #print(nr)
+        #print(ng)
+        #print(nb)
+
     
     write(nr, ng, nb, i)
+    
+def make_markings_clear():
+    update_color('-','-','-', orient(0), dim=True)
+    update_color('-','-','-', orient(6), dim=True)
+    update_color('-','-','-', orient(12), dim=True)
+    update_color('-','-','-', orient(18), dim=True)
+    update_color('-','-','-', orient(0), dim=True)
+    '''update_color(0,0,0, orient(0), dim=True)
+    update_color(0,0,0, orient(6), dim=True)
+    update_color(0,0,0, orient(12), dim=True)
+    update_color(0,0,0, orient(18), dim=True)'''
+
 
 # Main loop
 while True:
@@ -97,11 +131,15 @@ while True:
     print(actual_time)
     
     np.fill(bg_col)  # Fill background color
+    make_markings_clear()
     
     # Update NeoPixels for second, minute, and hour
-    update_color(255, '-', '-', get_sec())   # Red for seconds
-    update_color('-', 255, '-', get_min())   # Green for minutes
-    update_color('-', '-', 255, get_hr())    # Blue for hours
+    update_color(254, '-', '-', get_sec())   # Red for seconds
+    update_color('-', 70, '-', get_min())   # Green for minutes
+    update_color('-', '-', 250, get_hr())    # Blue for hours
+    make_markings_clear()
     
     np.write()  # Refresh the LEDs
     time.sleep(0.5)
+
+
