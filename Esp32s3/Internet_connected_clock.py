@@ -3,7 +3,7 @@ import time
 import machine
 import network
 import ntptime
-from random import randint # time-pass
+from random import randint # time-pass using random colours
 
 # Settings
 
@@ -13,7 +13,7 @@ wifi_id = 0                    #which ssid/pwd to use(follow python array rules 
 time_off = 5.5 * 3600  # UTC offset in seconds
 bg_col = (3, 1, 2)     # Background color
 np_pin = 1             # NeoPixel pin
-ck_type = 12           # Clock type: 12 or 24-hour format
+ck_type = 12           # Clock type: 12 or 24-hour format # work in progress
 
 # Neopixel setup
 pin = machine.Pin(np_pin)   # Set GPIO to output to drive NeoPixels
