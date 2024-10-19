@@ -22,7 +22,9 @@ CONNECTION:
     ADC2 | Y READ/VRY/Y READING
     3V3  | VCC/POWER
     GND  | GND/GROUND
-
+ IMPORTS:
+ machine and time - you should probabaly know these if wo've used micropython fot atleast a month
+ IOAPI - one of my libraries, it is at(CHME)
   '''
 import machine
 import time
