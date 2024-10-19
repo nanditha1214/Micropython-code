@@ -23,7 +23,7 @@ CONNECTION:
     3V3  | VCC/POWER
     GND  | GND/GROUND
  IMPORTS:
- machine and time - you should probabaly know these if wo've used micropython fot atleast a month
+   machine and time - you should probabaly know these if you've used micropython fot atleast a month
  IOAPI - one of my libraries, it is at(https://github.com/nanditha1214/Micropython-code/blob/main/general%20-%20works%20with%20most%20MCUs/my_libs/IOAPI.py)
   '''
 import machine
