@@ -3,6 +3,9 @@ from time import sleep
 
 # IOAPI V1.5 WITH PROPER CODE DOCUMENTATION
 
+def clamp(value, min_value, max_value):
+    return max(min_value, min(value, max_value))
+
 def my_map(x, in_min, in_max, out_min, out_max):
     """
     Maps a value from one range to another.
@@ -33,7 +36,7 @@ class Joystick:
     read(val, joy_rnge=None): Reads and maps the joystick's X or Y axis to a user-defined range.
     """
     
-    def __init__(self, def_range=8, x_adc=1, y_adc=2):
+    def __init__(self, def_range=4, x_adc=1, y_adc=2):
         """
         Initializes the Joystick with default range and ADC channels.
         
@@ -78,9 +81,9 @@ class Joystick:
             return x_val, y_val  # Return both X and Y values if neither axis is specified
 
 # Example of testing the Joystick class (uncomment to use)
-'''
-joystick = Joystick()  # Initialize joystick with default settings
+
+'''joystick = Joystick()  # Initialize joystick with default settings
 while True:
-    print(joystick.read(val='y'))  # Print the Y-axis value every 0.1 seconds
-    sleep(0.1)
-'''
+    print(joystick.read(val='x'), joystick.read(val='y'))  # Print the Y-axis value every 0.1 seconds
+    sleep(0.1)'''
+
